@@ -102,7 +102,7 @@ This example is not very complex, but we can learn a lot about `task` from runni
 * Tapping the "Hide Timer" button cancels our current `Task`.
 * Selecting tab two from our `TabView` cancels our current `Task` from tab one. Switching back to tab one then begins a new `Task`. As we learned from Fatbobman, SwiftUI is working here for us to behave similar to the [`onAppear(perform:)`](https://developer.apple.com/documentation/swiftui/view/onappear(perform:)) and [`onDisappear(perform:)`](https://developer.apple.com/documentation/swiftui/view/ondisappear(perform:)) modifiers.
 
-This is all great! So what’s the problem? It’s the always inevitable “changing requirements”.[^2] We brought this to our product managers and now we want a *different* view component that *also* needs a current `Date` updated every second. What options to we have to then implement two or more view components built from an `AsyncTimerSequence` that updates on every second?
+This is all great! So what’s the problem? It’s the always inevitable “changing requirements”.[^2] We brought this to our product managers and now we want a *different* view component that *also* needs a current `Date` updated every second. What options do we have to then implement two or more view components built from an `AsyncTimerSequence` that updates on every second?
 
 Well… we could start by just copying the implementation to our new view component:
 
