@@ -276,7 +276,7 @@ Our `TimerProperty` is not complex. Let’s look through all we have so far:
 
 * `TimerProperty` declares a private `State` variable to manage a `TimerPropertyStorage` reference. We will talk more about this later.
 * `TimerProperty` is a property wrapper. The `wrappedValue` property returns the `date` property from our `TimerPropertyStorage` reference.
-* `TimerProperty` adopts `DynamicProperty`. The `update` method is forwarded to our `TimerPropertyStorage` reference with the same business logic that previously happened in our view components.
+* `TimerProperty` adopts `DynamicProperty`. The `update` method is forwarded to our `TimerPropertyStorage` reference with the same business logic we previously defined in our view components.
 
 Let’s build `TimerPropertyStorage`:
 
