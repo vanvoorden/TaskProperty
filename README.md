@@ -690,6 +690,7 @@ The following references are great resources to learn more about `DynamicPropert
 * Dave DeLong • [Custom Property Wrappers for SwiftUI](https://davedelong.com/blog/2021/04/02/custom-property-wrappers-for-swiftui/) • 2021
 * Dave DeLong • [Core Data and SwiftUI](https://davedelong.com/blog/2021/04/03/core-data-and-swiftui/) • 2021
 * Fatbobman • [How to Avoid Repeating SwiftUI View Updates](https://fatbobman.com/en/posts/avoid_repeated_calculations_of_swiftui_views/) • 2022
+* Fatbobman • [SwiftUI and Core Data: Data Fetching](https://fatbobman.com/en/posts/modern-core-data-fetcher/) • 2022
 * Saagar Jha • [Making Friends with AttributeGraph](https://saagarjha.com/blog/2024/02/27/making-friends-with-attributegraph/) • 2024
 * Shadowfacts • [Custom Property Wrappers in SwiftUI](https://shadowfacts.net/2025/swiftui-property-wrappers/) • 2025
 
