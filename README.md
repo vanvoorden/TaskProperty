@@ -694,6 +694,22 @@ The following references are great resources to learn more about `DynamicPropert
 * Saagar Jha • [Making Friends with AttributeGraph](https://saagarjha.com/blog/2024/02/27/making-friends-with-attributegraph/) • 2024
 * Shadowfacts • [Custom Property Wrappers in SwiftUI](https://shadowfacts.net/2025/swiftui-property-wrappers/) • 2025
 
+## Copyright
+
+Copyright 2026 North Bronson Software
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
 [^1]: <https://fatbobman.com/en/posts/mastering_swiftui_task_modifier/>
 [^2]: <https://martinfowler.com/distributedComputing/soft.pdf>
 [^3]: <https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0>
