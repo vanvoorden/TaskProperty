@@ -640,10 +640,9 @@ We can now update our `TimerProperty` to pass the `interval` as an `id`:
 @MainActor
 @propertyWrapper struct TimerProperty: @MainActor DynamicProperty {
   @State private var storage = TimerPropertyStorage()
-  
-  private var task = TaskProperty<Int>()
-  
   @State var interval = 1
+
+  private var task = TaskProperty<Int>()
   
   var wrappedValue: Date {
     self.storage.date
