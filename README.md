@@ -52,7 +52,7 @@ struct TimerDetailView: View {
 
 This example is inspired by an essay from Fatbobman.[^1]
 
-Our `TimerDetailView` has one `State` variable: the current `Date`. Our `body` property attaches a `task` view modifier: we begin an `AsyncTimerSequence` to update our `Date` every second.
+Our `TimerDetailView` has one `State` variable: the current `Date`. Our `body` property attaches a `task` view modifier: we begin an [`AsyncAlgorithms.AsyncTimerSequence`](https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncAlgorithms.docc/Guides/Timer.md) to update our `Date` every second.
 
 Let’s add some more code to put this in a real application:
 
