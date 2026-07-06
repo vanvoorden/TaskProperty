@@ -22,7 +22,7 @@ final class TimerPropertyStorage {
 @MainActor
 @propertyWrapper struct TimerProperty: @MainActor DynamicProperty {
   @State private var storage = TimerPropertyStorage()
-  
+  @State private var date = Date.now
   private var task = TaskProperty()
   
   var wrappedValue: Date {
@@ -30,7 +30,10 @@ final class TimerPropertyStorage {
   }
   
   func update() {
-    self.task.update { @MainActor [weak storage = self.storage] in
+    self.task.update { @MainActor [
+      weak storage = self.storage,
+      date = self._date
+    ] in
       let taskID = UUID()
       print("Task \(taskID) has started.")
       defer {
@@ -40,6 +43,19 @@ final class TimerPropertyStorage {
       for await _ in AsyncTimerSequence.repeating(every: .seconds(1.0)) {
         let now = Date.now
         storage?.update(date: now)
+        //
+        //  Capturing our `self` value leads to a "value retain cycle"
+        //  Our `storage` fails to deallocate and our `task` fails to cancel.
+        //
+        //  This leads to a retain cycle:
+        //  self.date = now
+        //
+        //  This leads to a retain cycle:
+        //  self._date.wrappedValue = now
+        //
+        //  This *does not* lead to a retain cycle:
+        //  date.wrappedValue = now
+        //
         print("Task \(taskID) : \(now.formatted(date: .omitted, time: .standard))")
       }
     }
