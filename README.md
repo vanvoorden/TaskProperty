@@ -352,7 +352,7 @@ Now we have the ability to cancel our `Task` when our view component disappears.
 
 ## Composing Dynamic Properties
 
-Our new `TimerProperty` gives us a place to put stateful business logic in a way that is more reusable and flexible than putting that business logic directly in a view component. But what if we wanted something even *more* reusable and *more* flexible?
+Our new `TimerProperty` gives us a place to put stateful business logic that is more reusable and flexible than putting that business logic directly in a view component. But what if we wanted something even *more* reusable and even *more* flexible?
 
 Suppose our product managers bring to us a new view component that needs to update time every second. We have that already: `TimerProperty`. But suppose our product managers bring to us a new view component that needs some *other* asynchronous operation. This could be a network connection or something else expensive that we don’t want to block on `MainActor`.
 
@@ -477,7 +477,7 @@ When we run our application we see the same behavior as before:
 
 Factoring stateful and imperative business logic out of view components is a good step to keep that business logic reusable and flexible. When your product requirements change your dynamic properties will help make it easy to bring that business logic to more places.
 
-Those of you who are have a background in ReactJS might recognize a similar pattern here: Hooks.[^7] Hooks introduced a stateful primitive to React: an alternative to keeping business logic in view components.
+Those of you who have a background in ReactJS might recognize a similar pattern here: Hooks.[^7] Hooks introduced a stateful primitive to React: an alternative to keeping business logic in view components.
 
 ## Dynamic Updates
 
@@ -678,6 +678,94 @@ We can now update our `TimerProperty` to pass the `interval` as an `id`:
 We can build and run our application to now see the expected behavior. Our application starts with a timer that fires every second. Selecting a new value from our `Picker` is correctly selecting the new interval our `AsyncTimerSequence` repeats from.
 
 If this starts to look a little like “magic” to you… try and also think through the contract that was promised by `DynamicProperty`. The SwiftUI infra will call our `update` *before* our `body` property is computed. If our view component uses a `Binding` on our `interval` to select a new value this will then compute a new `body` property. But *before* that new `body` property is computed we get `update` called. And when that `update` is called we have the *new* value of `interval` available.
+
+## Performance
+
+An important note here is that adopting `DynamicProperty` will call `update` for you before *every* `body` computation on this view component. This can be good: it gives you a lot of control and flexibility to dynamically deliver new derived state from changing inputs. This can also be bad: if you perform expensive operations in `update` those expensive operations will block your `body` computation on `main`.
+
+Suppose we have a view component for displaying `Contact` models for an address book application inspired by [SE-0261](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0261-identifiable.md). Our `FavoriteContactList` view component will display only `Contact` models that have the `isFavorite` property set to `true`. Computing the `favorites` is an `O(n)` operation: we perform a linear amount of work and visit every model. Performing this work on *every* `body` computation can lead to performance bottlenecks. We can *memoize* our `favorites` and trade memory for speed: we cache the last computed `favorites` and return our cached result if the input has not changed.
+
+This sounds like it could be a good place to use a custom dynamic property:
+
+```swift
+@propertyWrapper struct Favorites: DynamicProperty {
+  @State private var storage: Storage
+  private let contacts: [Contact]
+  
+  init(_ contacts: [Contact]) {
+    self.storage = Storage(contacts)
+    self.contacts = contacts
+  }
+  
+  func update() {
+    self.storage.update(self.contacts)
+  }
+  
+  var wrappedValue: [Contact] {
+    self.storage.wrappedValue
+  }
+}
+
+extension Favorites {
+  private final class Storage {
+    private var contacts: [Contact]
+    private var favorites: [Contact]?
+    
+    init(_ contacts: [Contact]) {
+      self.contacts = contacts
+      self.favorites = nil
+    }
+    
+    func update(_ contacts: [Contact]) {
+      if self.contacts != contacts {
+        self.contacts = contacts
+        self.favorites = nil
+      }
+    }
+    
+    var wrappedValue: [Contact] {
+      if let favorites = self.favorites {
+        return favorites
+      }
+      print("computing new result")
+      let favorites = self.contacts.filter {
+        $0.isFavorite
+      }
+      self.favorites = favorites
+      return favorites
+    }
+  }
+}
+```
+
+When we call `update` on `Favorites.Storage` we check the new `input` value against the previous `input` value with a check for value equality. This is linear-time operation: `O(n)`.
+
+An alternative is the new `isTriviallyIdentical(to:)` check introduced in [SE-0494](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0494-add-is-identical-methods.md#motivation):
+
+```swift
+extension Favorites {
+  private final class Storage {
+    ...
+    
+    func update(_ contacts: [Contact]) {
+      if self.contacts.isTriviallyIdentical(to: contacts) == false {
+        self.contacts = contacts
+        self.favorites = nil
+      }
+    }
+    
+    ...
+  }
+}
+```
+
+Our bottleneck is still linear-time: we visit every data model to build our `favorites`. But we now need *one* linear-time operation instead of *two*. And when our `input` values are identical our `update` can return in constant time.
+
+Always try to keep `update` as fast as possible. If you have no choice and *must* perform a linear amount of work over a collection then go ahead and do it. Memoizing or caching your derived state can sometimes be the smart tradeoff. Just pay attention to any performance bottlenecks that might slow down your `body` properties with expensive operations.
+
+## Testing
+
+Our `Favorites` dynamic property is an alternative to keeping this stateful business logic in a view component. Is this dynamic property more testable than a view component? Maybe not… but it’s also not *less* testable. SwiftUI view components themselves are challenging to write meaningful unit tests against. Our unit tests do not always have an easy way to hook into the SwiftUI lifecycle for correct `State` or `Environment` values. `Favorites` *also* depends on `State`… but moves its business logic to `Favorites.Storage`. And because `Favorites.Storage` has no dependencies on `State` that means we *can* begin to write meaningful unit tests.
 
 ## Next Steps
 
