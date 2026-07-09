@@ -740,7 +740,7 @@ extension Favorites {
 
 When we call `update` on `Favorites.Storage` we check the new `input` value against the previous `input` value with a check for value equality. This is linear-time operation: `O(n)`.
 
-An alternative is the new `isTriviallyIdentical(to:)` check introduced in [SE-0494](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0494-add-is-identical-methods.md#motivation):
+An alternative is the new `isTriviallyIdentical(to:)` check introduced in [SE-0494](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0494-add-is-identical-methods.md):
 
 ```swift
 extension Favorites {
