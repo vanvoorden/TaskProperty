@@ -10,6 +10,9 @@ What about *our own* dynamic properties? How can those be built? Why would we wa
 
 Dynamic Properties are a good place to put “business” logic: algorithms or patterns we might want to share across multiple view components. Dynamic Properties also compose well with *other* dynamic properties: we can make them *stateful*. We will work together through an example to see how this can work and how this can lead to code that is easier to maintain over time.
 
+> [!NOTE]
+> This project was built and tested from Xcode 26.6 and macOS 26.5.2.
+
 ## View Modifiers
 
 Suppose we are building a simple view component to display a clock. Our only job for now is to just display the current time and update every second.
